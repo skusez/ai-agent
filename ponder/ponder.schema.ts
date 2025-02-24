@@ -4,12 +4,16 @@
  */
 
 import { onchainTable, primaryKey, index } from "ponder";
+import { SupportedChainIds } from "./ponder.config";
 
 export const eventCreatePool = onchainTable(
   "event_create_pool",
   (t) => ({
     userAddress: t.hex().notNull(),
     agentAddress: t.hex().notNull(),
+    timestamp: t.bigint().notNull(),
+    txHash: t.hex().notNull(),
+    chainId: t.integer().notNull().$type<SupportedChainIds>(),
   }),
   (t) => ({
     pk: primaryKey({ columns: [t.userAddress, t.agentAddress] }),
@@ -23,6 +27,8 @@ export const eventComplete = onchainTable(
     userAddress: t.hex().notNull(),
     agentAddress: t.hex().notNull(),
     timestamp: t.bigint().notNull(),
+    txHash: t.hex().notNull(),
+    chainId: t.integer().notNull().$type<SupportedChainIds>(),
   }),
   (t) => ({
     pk: primaryKey({ columns: [t.userAddress, t.agentAddress] }),
@@ -42,6 +48,7 @@ export const eventTrade = onchainTable(
     timestamp: t.bigint().notNull(),
     virtualEthReserves: t.bigint().notNull(),
     virtualTokenReserves: t.bigint().notNull(),
+    chainId: t.integer().notNull().$type<SupportedChainIds>(),
   }),
   (t) => ({
     pk: primaryKey({ columns: [t.txHash] }),

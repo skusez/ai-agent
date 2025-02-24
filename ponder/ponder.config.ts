@@ -4,13 +4,15 @@ import { http } from "viem";
 import { pumpFunAbi, pumpFunAddress } from "../generated";
 import { monadTestnet } from "viem/chains";
 
-export default createConfig({
-  networks: {
-    [monadTestnet.id]: {
-      chainId: monadTestnet.id,
-      transport: http(process.env.PONDER_RPC_URL_10143),
-    },
+const networks = {
+  [monadTestnet.id]: {
+    chainId: monadTestnet.id,
+    transport: http(process.env.PONDER_RPC_URL_10143),
   },
+} as const;
+
+export default createConfig({
+  networks,
   contracts: {
     pumpFun: {
       abi: pumpFunAbi,
@@ -20,3 +22,5 @@ export default createConfig({
     },
   },
 });
+
+export type SupportedChainIds = keyof typeof networks;
