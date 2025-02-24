@@ -1,0 +1,11 @@
+{
+  "name": "ai-agent",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.14"
+  },
+  "devDependencies": {
+    "@wagmi/cli": "^2.2.0"
+  }
+}
