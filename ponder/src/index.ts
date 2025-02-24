@@ -1,3 +1,6 @@
+/**
+ * @dev handle events, we may want to do more logic in each event handler such as interacting with other database tables
+ */
 import { ponder } from "ponder:registry";
 import schema from "ponder:schema";
 import { getChainId } from "./utills";
@@ -16,6 +19,9 @@ ponder.on("pumpFun:CreatePool", async ({ event, context }) => {
 });
 
 ponder.on("pumpFun:Complete", async ({ event, context }) => {
+  /**
+   * @dev handle complete event (update agent status?)
+   */
   await context.db.insert(schema.eventComplete).values({
     txHash: event.transaction.hash,
     userAddress: event.args.user,
@@ -26,6 +32,9 @@ ponder.on("pumpFun:Complete", async ({ event, context }) => {
 });
 
 ponder.on("pumpFun:Trade", async ({ event, context }) => {
+  /**
+   * @dev handle trade event (update pool stats?)
+   */
   await context.db.insert(schema.eventTrade).values({
     ethAmount: event.args.ethAmount,
     tokenAmount: event.args.tokenAmount,
