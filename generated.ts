@@ -167,6 +167,184 @@ export const erc20Abi = [
 ] as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ERC20Burnable
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const erc20BurnableAbi = [
+  {
+    type: 'error',
+    inputs: [
+      { name: 'spender', internalType: 'address', type: 'address' },
+      { name: 'allowance', internalType: 'uint256', type: 'uint256' },
+      { name: 'needed', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ERC20InsufficientAllowance',
+  },
+  {
+    type: 'error',
+    inputs: [
+      { name: 'sender', internalType: 'address', type: 'address' },
+      { name: 'balance', internalType: 'uint256', type: 'uint256' },
+      { name: 'needed', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'ERC20InsufficientBalance',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'approver', internalType: 'address', type: 'address' }],
+    name: 'ERC20InvalidApprover',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'receiver', internalType: 'address', type: 'address' }],
+    name: 'ERC20InvalidReceiver',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'sender', internalType: 'address', type: 'address' }],
+    name: 'ERC20InvalidSender',
+  },
+  {
+    type: 'error',
+    inputs: [{ name: 'spender', internalType: 'address', type: 'address' }],
+    name: 'ERC20InvalidSpender',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'owner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'spender',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'value',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Approval',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address', indexed: true },
+      { name: 'to', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'value',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'Transfer',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'owner', internalType: 'address', type: 'address' },
+      { name: 'spender', internalType: 'address', type: 'address' },
+    ],
+    name: 'allowance',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'spender', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'approve',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'value', internalType: 'uint256', type: 'uint256' }],
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'burnFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'name',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'symbol',
+    outputs: [{ name: '', internalType: 'string', type: 'string' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'totalSupply',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'transfer',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'from', internalType: 'address', type: 'address' },
+      { name: 'to', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'transferFrom',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'nonpayable',
+  },
+] as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // IERC1155Errors
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -553,6 +731,7 @@ export const iPumpFunAbi = [
     inputs: [
       { name: 'token', internalType: 'address', type: 'address' },
       { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'tokenOwner', internalType: 'address', type: 'address' },
     ],
     name: 'createPool',
     outputs: [],
@@ -699,9 +878,11 @@ export const pumpFunAbi = [
   {
     type: 'constructor',
     inputs: [
-      { name: 'newAddr', internalType: 'address', type: 'address' },
+      { name: 'feeRecipientAddress', internalType: 'address', type: 'address' },
       { name: 'feeAmt', internalType: 'uint256', type: 'uint256' },
       { name: 'basisFee', internalType: 'uint256', type: 'uint256' },
+      { name: 'router', internalType: 'address', type: 'address' },
+      { name: 'tokenFactoryAddress', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'nonpayable',
   },
@@ -727,8 +908,57 @@ export const pumpFunAbi = [
     inputs: [
       { name: 'mint', internalType: 'address', type: 'address', indexed: true },
       { name: 'user', internalType: 'address', type: 'address', indexed: true },
+      {
+        name: 'virtualEthReserves',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'virtualTokenReserves',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
     ],
     name: 'CreatePool',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'token',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'uniswapV2Pair',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'ethReserves',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'tokenReserves',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+      {
+        name: 'timestamp',
+        internalType: 'uint256',
+        type: 'uint256',
+        indexed: false,
+      },
+    ],
+    name: 'OpenTradingOnUniswap',
   },
   {
     type: 'event',
@@ -786,7 +1016,9 @@ export const pumpFunAbi = [
       { name: 'realEthReserves', internalType: 'uint256', type: 'uint256' },
       { name: 'tokenTotalSupply', internalType: 'uint256', type: 'uint256' },
       { name: 'mcapLimit', internalType: 'uint256', type: 'uint256' },
+      { name: 'tokenOwner', internalType: 'address', type: 'address' },
       { name: 'complete', internalType: 'bool', type: 'bool' },
+      { name: 'uniswapV2Pair', internalType: 'address', type: 'address' },
     ],
     stateMutability: 'view',
   },
@@ -832,7 +1064,9 @@ export const pumpFunAbi = [
             type: 'uint256',
           },
           { name: 'mcapLimit', internalType: 'uint256', type: 'uint256' },
+          { name: 'tokenOwner', internalType: 'address', type: 'address' },
           { name: 'complete', internalType: 'bool', type: 'bool' },
+          { name: 'uniswapV2Pair', internalType: 'address', type: 'address' },
         ],
       },
       { name: 'tokenAmount', internalType: 'uint256', type: 'uint256' },
@@ -846,6 +1080,7 @@ export const pumpFunAbi = [
     inputs: [
       { name: 'token', internalType: 'address', type: 'address' },
       { name: 'amount', internalType: 'uint256', type: 'uint256' },
+      { name: 'tokenOwnerAddress', internalType: 'address', type: 'address' },
     ],
     name: 'createPool',
     outputs: [],
@@ -884,7 +1119,9 @@ export const pumpFunAbi = [
             type: 'uint256',
           },
           { name: 'mcapLimit', internalType: 'uint256', type: 'uint256' },
+          { name: 'tokenOwner', internalType: 'address', type: 'address' },
           { name: 'complete', internalType: 'bool', type: 'bool' },
+          { name: 'uniswapV2Pair', internalType: 'address', type: 'address' },
         ],
       },
     ],
@@ -896,6 +1133,13 @@ export const pumpFunAbi = [
     name: 'getCreateFee',
     outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
+    name: 'openTradingOnUniswap',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -951,6 +1195,15 @@ export const pumpFunAbi = [
   },
   {
     type: 'function',
+    inputs: [
+      { name: '_tokenFactory', internalType: 'address', type: 'address' },
+    ],
+    name: 'setTokenFactory',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [{ name: 'newSupply', internalType: 'uint256', type: 'uint256' }],
     name: 'setTotalSupply',
     outputs: [],
@@ -958,10 +1211,10 @@ export const pumpFunAbi = [
   },
   {
     type: 'function',
-    inputs: [{ name: 'token', internalType: 'address', type: 'address' }],
-    name: 'withdraw',
-    outputs: [],
-    stateMutability: 'nonpayable',
+    inputs: [],
+    name: 'tokenFactory',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
   },
   { type: 'receive', stateMutability: 'payable' },
 ] as const
@@ -1110,6 +1363,23 @@ export const tokenAbi = [
   },
   {
     type: 'function',
+    inputs: [{ name: 'value', internalType: 'uint256', type: 'uint256' }],
+    name: 'burn',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'account', internalType: 'address', type: 'address' },
+      { name: 'value', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'burnFrom',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     inputs: [],
     name: 'decimals',
     outputs: [{ name: '', internalType: 'uint8', type: 'uint8' }],
@@ -1196,8 +1466,15 @@ export const tokenFactoryAbi = [
       { name: 'ticker', internalType: 'string', type: 'string' },
     ],
     name: 'deployERC20Token',
-    outputs: [],
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
     stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'owner',
+    outputs: [{ name: '', internalType: 'address', type: 'address' }],
+    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -1205,13 +1482,6 @@ export const tokenFactoryAbi = [
     name: 'setPoolAddress',
     outputs: [],
     stateMutability: 'nonpayable',
-  },
-  {
-    type: 'function',
-    inputs: [],
-    name: 'taxAddress',
-    outputs: [{ name: '', internalType: 'address', type: 'address' }],
-    stateMutability: 'view',
   },
   {
     type: 'function',
@@ -1224,6 +1494,13 @@ export const tokenFactoryAbi = [
       { name: 'totalSupply', internalType: 'uint256', type: 'uint256' },
     ],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'newOwner', internalType: 'address', type: 'address' }],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
   },
 ] as const
 
@@ -1381,6 +1658,183 @@ export const watchErc20TransferEvent = /*#__PURE__*/ createWatchContractEvent({
   abi: erc20Abi,
   eventName: 'Transfer',
 })
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link erc20BurnableAbi}__
+ */
+export const readErc20Burnable = /*#__PURE__*/ createReadContract({
+  abi: erc20BurnableAbi,
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"allowance"`
+ */
+export const readErc20BurnableAllowance = /*#__PURE__*/ createReadContract({
+  abi: erc20BurnableAbi,
+  functionName: 'allowance',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"balanceOf"`
+ */
+export const readErc20BurnableBalanceOf = /*#__PURE__*/ createReadContract({
+  abi: erc20BurnableAbi,
+  functionName: 'balanceOf',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"decimals"`
+ */
+export const readErc20BurnableDecimals = /*#__PURE__*/ createReadContract({
+  abi: erc20BurnableAbi,
+  functionName: 'decimals',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"name"`
+ */
+export const readErc20BurnableName = /*#__PURE__*/ createReadContract({
+  abi: erc20BurnableAbi,
+  functionName: 'name',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"symbol"`
+ */
+export const readErc20BurnableSymbol = /*#__PURE__*/ createReadContract({
+  abi: erc20BurnableAbi,
+  functionName: 'symbol',
+})
+
+/**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"totalSupply"`
+ */
+export const readErc20BurnableTotalSupply = /*#__PURE__*/ createReadContract({
+  abi: erc20BurnableAbi,
+  functionName: 'totalSupply',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link erc20BurnableAbi}__
+ */
+export const writeErc20Burnable = /*#__PURE__*/ createWriteContract({
+  abi: erc20BurnableAbi,
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"approve"`
+ */
+export const writeErc20BurnableApprove = /*#__PURE__*/ createWriteContract({
+  abi: erc20BurnableAbi,
+  functionName: 'approve',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"burn"`
+ */
+export const writeErc20BurnableBurn = /*#__PURE__*/ createWriteContract({
+  abi: erc20BurnableAbi,
+  functionName: 'burn',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"burnFrom"`
+ */
+export const writeErc20BurnableBurnFrom = /*#__PURE__*/ createWriteContract({
+  abi: erc20BurnableAbi,
+  functionName: 'burnFrom',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"transfer"`
+ */
+export const writeErc20BurnableTransfer = /*#__PURE__*/ createWriteContract({
+  abi: erc20BurnableAbi,
+  functionName: 'transfer',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const writeErc20BurnableTransferFrom = /*#__PURE__*/ createWriteContract(
+  { abi: erc20BurnableAbi, functionName: 'transferFrom' },
+)
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link erc20BurnableAbi}__
+ */
+export const simulateErc20Burnable = /*#__PURE__*/ createSimulateContract({
+  abi: erc20BurnableAbi,
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"approve"`
+ */
+export const simulateErc20BurnableApprove =
+  /*#__PURE__*/ createSimulateContract({
+    abi: erc20BurnableAbi,
+    functionName: 'approve',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"burn"`
+ */
+export const simulateErc20BurnableBurn = /*#__PURE__*/ createSimulateContract({
+  abi: erc20BurnableAbi,
+  functionName: 'burn',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"burnFrom"`
+ */
+export const simulateErc20BurnableBurnFrom =
+  /*#__PURE__*/ createSimulateContract({
+    abi: erc20BurnableAbi,
+    functionName: 'burnFrom',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"transfer"`
+ */
+export const simulateErc20BurnableTransfer =
+  /*#__PURE__*/ createSimulateContract({
+    abi: erc20BurnableAbi,
+    functionName: 'transfer',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link erc20BurnableAbi}__ and `functionName` set to `"transferFrom"`
+ */
+export const simulateErc20BurnableTransferFrom =
+  /*#__PURE__*/ createSimulateContract({
+    abi: erc20BurnableAbi,
+    functionName: 'transferFrom',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link erc20BurnableAbi}__
+ */
+export const watchErc20BurnableEvent = /*#__PURE__*/ createWatchContractEvent({
+  abi: erc20BurnableAbi,
+})
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link erc20BurnableAbi}__ and `eventName` set to `"Approval"`
+ */
+export const watchErc20BurnableApprovalEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: erc20BurnableAbi,
+    eventName: 'Approval',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link erc20BurnableAbi}__ and `eventName` set to `"Transfer"`
+ */
+export const watchErc20BurnableTransferEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: erc20BurnableAbi,
+    eventName: 'Transfer',
+  })
 
 /**
  * Wraps __{@link readContract}__ with `abi` set to __{@link ierc20Abi}__
@@ -1909,6 +2363,17 @@ export const readPumpFunGetCreateFee = /*#__PURE__*/ createReadContract({
 })
 
 /**
+ * Wraps __{@link readContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"tokenFactory"`
+ *
+ * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
+ */
+export const readPumpFunTokenFactory = /*#__PURE__*/ createReadContract({
+  abi: pumpFunAbi,
+  address: pumpFunAddress,
+  functionName: 'tokenFactory',
+})
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link pumpFunAbi}__
  *
  * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
@@ -1939,6 +2404,18 @@ export const writePumpFunCreatePool = /*#__PURE__*/ createWriteContract({
   address: pumpFunAddress,
   functionName: 'createPool',
 })
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"openTradingOnUniswap"`
+ *
+ * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
+ */
+export const writePumpFunOpenTradingOnUniswap =
+  /*#__PURE__*/ createWriteContract({
+    abi: pumpFunAbi,
+    address: pumpFunAddress,
+    functionName: 'openTradingOnUniswap',
+  })
 
 /**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"sell"`
@@ -2008,6 +2485,17 @@ export const writePumpFunSetOwner = /*#__PURE__*/ createWriteContract({
 })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"setTokenFactory"`
+ *
+ * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
+ */
+export const writePumpFunSetTokenFactory = /*#__PURE__*/ createWriteContract({
+  abi: pumpFunAbi,
+  address: pumpFunAddress,
+  functionName: 'setTokenFactory',
+})
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"setTotalSupply"`
  *
  * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
@@ -2016,17 +2504,6 @@ export const writePumpFunSetTotalSupply = /*#__PURE__*/ createWriteContract({
   abi: pumpFunAbi,
   address: pumpFunAddress,
   functionName: 'setTotalSupply',
-})
-
-/**
- * Wraps __{@link writeContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"withdraw"`
- *
- * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
- */
-export const writePumpFunWithdraw = /*#__PURE__*/ createWriteContract({
-  abi: pumpFunAbi,
-  address: pumpFunAddress,
-  functionName: 'withdraw',
 })
 
 /**
@@ -2060,6 +2537,18 @@ export const simulatePumpFunCreatePool = /*#__PURE__*/ createSimulateContract({
   address: pumpFunAddress,
   functionName: 'createPool',
 })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"openTradingOnUniswap"`
+ *
+ * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
+ */
+export const simulatePumpFunOpenTradingOnUniswap =
+  /*#__PURE__*/ createSimulateContract({
+    abi: pumpFunAbi,
+    address: pumpFunAddress,
+    functionName: 'openTradingOnUniswap',
+  })
 
 /**
  * Wraps __{@link simulateContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"sell"`
@@ -2126,6 +2615,18 @@ export const simulatePumpFunSetOwner = /*#__PURE__*/ createSimulateContract({
 })
 
 /**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"setTokenFactory"`
+ *
+ * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
+ */
+export const simulatePumpFunSetTokenFactory =
+  /*#__PURE__*/ createSimulateContract({
+    abi: pumpFunAbi,
+    address: pumpFunAddress,
+    functionName: 'setTokenFactory',
+  })
+
+/**
  * Wraps __{@link simulateContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"setTotalSupply"`
  *
  * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
@@ -2136,17 +2637,6 @@ export const simulatePumpFunSetTotalSupply =
     address: pumpFunAddress,
     functionName: 'setTotalSupply',
   })
-
-/**
- * Wraps __{@link simulateContract}__ with `abi` set to __{@link pumpFunAbi}__ and `functionName` set to `"withdraw"`
- *
- * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
- */
-export const simulatePumpFunWithdraw = /*#__PURE__*/ createSimulateContract({
-  abi: pumpFunAbi,
-  address: pumpFunAddress,
-  functionName: 'withdraw',
-})
 
 /**
  * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link pumpFunAbi}__
@@ -2177,6 +2667,18 @@ export const watchPumpFunCreatePoolEvent =
     abi: pumpFunAbi,
     address: pumpFunAddress,
     eventName: 'CreatePool',
+  })
+
+/**
+ * Wraps __{@link watchContractEvent}__ with `abi` set to __{@link pumpFunAbi}__ and `eventName` set to `"OpenTradingOnUniswap"`
+ *
+ * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c)
+ */
+export const watchPumpFunOpenTradingOnUniswapEvent =
+  /*#__PURE__*/ createWatchContractEvent({
+    abi: pumpFunAbi,
+    address: pumpFunAddress,
+    eventName: 'OpenTradingOnUniswap',
   })
 
 /**
@@ -2257,6 +2759,22 @@ export const writeTokenApprove = /*#__PURE__*/ createWriteContract({
 })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenAbi}__ and `functionName` set to `"burn"`
+ */
+export const writeTokenBurn = /*#__PURE__*/ createWriteContract({
+  abi: tokenAbi,
+  functionName: 'burn',
+})
+
+/**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenAbi}__ and `functionName` set to `"burnFrom"`
+ */
+export const writeTokenBurnFrom = /*#__PURE__*/ createWriteContract({
+  abi: tokenAbi,
+  functionName: 'burnFrom',
+})
+
+/**
  * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenAbi}__ and `functionName` set to `"transfer"`
  */
 export const writeTokenTransfer = /*#__PURE__*/ createWriteContract({
@@ -2285,6 +2803,22 @@ export const simulateToken = /*#__PURE__*/ createSimulateContract({
 export const simulateTokenApprove = /*#__PURE__*/ createSimulateContract({
   abi: tokenAbi,
   functionName: 'approve',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenAbi}__ and `functionName` set to `"burn"`
+ */
+export const simulateTokenBurn = /*#__PURE__*/ createSimulateContract({
+  abi: tokenAbi,
+  functionName: 'burn',
+})
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenAbi}__ and `functionName` set to `"burnFrom"`
+ */
+export const simulateTokenBurnFrom = /*#__PURE__*/ createSimulateContract({
+  abi: tokenAbi,
+  functionName: 'burnFrom',
 })
 
 /**
@@ -2373,14 +2907,14 @@ export const readTokenFactoryCurrentTokenIndex =
   })
 
 /**
- * Wraps __{@link readContract}__ with `abi` set to __{@link tokenFactoryAbi}__ and `functionName` set to `"taxAddress"`
+ * Wraps __{@link readContract}__ with `abi` set to __{@link tokenFactoryAbi}__ and `functionName` set to `"owner"`
  *
  * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0x0310D271B1CcCdbe4557B73a6Dcb3718cDAD8CFA)
  */
-export const readTokenFactoryTaxAddress = /*#__PURE__*/ createReadContract({
+export const readTokenFactoryOwner = /*#__PURE__*/ createReadContract({
   abi: tokenFactoryAbi,
   address: tokenFactoryAddress,
-  functionName: 'taxAddress',
+  functionName: 'owner',
 })
 
 /**
@@ -2429,6 +2963,18 @@ export const writeTokenFactorySetPoolAddress =
   })
 
 /**
+ * Wraps __{@link writeContract}__ with `abi` set to __{@link tokenFactoryAbi}__ and `functionName` set to `"transferOwnership"`
+ *
+ * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0x0310D271B1CcCdbe4557B73a6Dcb3718cDAD8CFA)
+ */
+export const writeTokenFactoryTransferOwnership =
+  /*#__PURE__*/ createWriteContract({
+    abi: tokenFactoryAbi,
+    address: tokenFactoryAddress,
+    functionName: 'transferOwnership',
+  })
+
+/**
  * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenFactoryAbi}__
  *
  * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0x0310D271B1CcCdbe4557B73a6Dcb3718cDAD8CFA)
@@ -2460,4 +3006,16 @@ export const simulateTokenFactorySetPoolAddress =
     abi: tokenFactoryAbi,
     address: tokenFactoryAddress,
     functionName: 'setPoolAddress',
+  })
+
+/**
+ * Wraps __{@link simulateContract}__ with `abi` set to __{@link tokenFactoryAbi}__ and `functionName` set to `"transferOwnership"`
+ *
+ * [__View Contract on Monad Testnet Monad Testnet Explorer__](https://testnet.monadexplorer.com/address/0x0310D271B1CcCdbe4557B73a6Dcb3718cDAD8CFA)
+ */
+export const simulateTokenFactoryTransferOwnership =
+  /*#__PURE__*/ createSimulateContract({
+    abi: tokenFactoryAbi,
+    address: tokenFactoryAddress,
+    functionName: 'transferOwnership',
   })

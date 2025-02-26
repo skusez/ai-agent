@@ -22,10 +22,30 @@ async function main() {
   console.log("TokenFactory setPoolAddress to:", pumpAddress);
 
   // Create a new token
-  await tokenFactory.deployERC20Token("Test Token", "TST", {
-    value: 1000000000000000n,
-  });
+  const createTokenTx = await tokenFactory.deployERC20Token(
+    "Test Token",
+    "TST",
+    {
+      value: 1000000000000000n,
+    }
+  );
+  await createTokenTx.wait();
   console.log("New token deployed");
+
+  // Get the token address
+  const tokenCount = await tokenFactory.currentTokenIndex();
+  const tokenData = await tokenFactory.tokens(tokenCount - 1);
+  const tokenAddress = tokenData[0]; // The token address is the first element in the returned struct
+  console.log("Token deployed at:", tokenAddress);
+
+  console.log("\nNext steps:");
+  console.log(
+    "1. Users can buy tokens using: pump.buy(tokenAddress, amount, maxEthCost, {value: ethAmount})"
+  );
+  console.log(
+    "2. Once the token is complete (mcap > mcapLimit or < 20% tokens left),"
+  );
+  console.log("   call: pump.openTradingOnUniswap(tokenAddress)");
 }
 
 main().catch((error) => {

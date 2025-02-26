@@ -2,22 +2,19 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {ERC20Burnable} from "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 
 interface IUniswapV2Factory {
-    function createPair(
-        address tokenA,
-        address tokenB
-    ) external returns (address pair);
+    function createPair(address tokenA, address tokenB) external returns (address pair);
 }
 
 interface IUniswapV2Router02 {
     function swapExactTokensForETHSupportingFeeOnTransferTokens(
-        uint amountIn,
-        uint amountOutMin,
+        uint256 amountIn,
+        uint256 amountOutMin,
         address[] calldata path,
         address to,
-        uint deadline
+        uint256 deadline
     ) external;
 
     function factory() external pure returns (address);
@@ -26,15 +23,12 @@ interface IUniswapV2Router02 {
 
     function addLiquidityETH(
         address token,
-        uint amountTokenDesired,
-        uint amountTokenMin,
-        uint amountETHMin,
+        uint256 amountTokenDesired,
+        uint256 amountTokenMin,
+        uint256 amountETHMin,
         address to,
-        uint deadline
-    )
-        external
-        payable
-        returns (uint amountToken, uint amountETH, uint liquidity);
+        uint256 deadline
+    ) external payable returns (uint256 amountToken, uint256 amountETH, uint256 liquidity);
 }
 
 contract PumpFun is ReentrancyGuard {
@@ -52,10 +46,7 @@ contract PumpFun is ReentrancyGuard {
 
     IUniswapV2Router02 private uniswapV2Router;
 
-    struct Profile {
-        address user;
-        Token[] tokens;
-    }
+    address public tokenFactory;
 
     struct Token {
         address tokenMint;
@@ -65,86 +56,111 @@ contract PumpFun is ReentrancyGuard {
         uint256 realEthReserves;
         uint256 tokenTotalSupply;
         uint256 mcapLimit;
+        address tokenOwner;
         bool complete;
+        address uniswapV2Pair;
     }
 
-    mapping (address => Token) public bondingCurve;
+    mapping(address => Token) public bondingCurve;
 
-    event CreatePool(address indexed mint, address indexed user);
-    event Complete(address indexed user, address indexed  mint, uint256 timestamp);
-    event Trade(address indexed mint, uint256 ethAmount, uint256 tokenAmount, bool isBuy, address indexed user, uint256 timestamp, uint256 virtualEthReserves, uint256 virtualTokenReserves);
+    event CreatePool(
+        address indexed mint, address indexed user, uint256 virtualEthReserves, uint256 virtualTokenReserves
+    );
+    event Complete(address indexed user, address indexed mint, uint256 timestamp);
+    event Trade(
+        address indexed mint,
+        uint256 ethAmount,
+        uint256 tokenAmount,
+        bool isBuy,
+        address indexed user,
+        uint256 timestamp,
+        uint256 virtualEthReserves,
+        uint256 virtualTokenReserves
+    );
+    event OpenTradingOnUniswap(
+        address indexed token,
+        address indexed uniswapV2Pair,
+        uint256 ethReserves,
+        uint256 tokenReserves,
+        uint256 timestamp
+    );
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner, "Not Owner");
         _;
     }
 
     constructor(
-        address newAddr,
-        uint256 feeAmt, 
-        uint256 basisFee
-    ){
-        feeRecipient = newAddr;
+        address feeRecipientAddress,
+        uint256 feeAmt,
+        uint256 basisFee,
+        address router,
+        address tokenFactoryAddress
+    ) {
+        owner = msg.sender;
+        feeRecipient = feeRecipientAddress;
         createFee = feeAmt;
         feeBasisPoint = basisFee;
-        initialVirtualTokenReserves = 10**27;
-        initialVirtualEthReserves = 3*10**21;
-        tokenTotalSupply = 10**27;
-        mcapLimit = 10**23;
+        initialVirtualTokenReserves = 10 ** 27;
+        initialVirtualEthReserves = 3 * 10 ** 21;
+        tokenTotalSupply = 10 ** 27;
+        mcapLimit = 10 ** 23;
+        uniswapV2Router = IUniswapV2Router02(router);
+        tokenFactory = tokenFactoryAddress;
     }
 
-    function createPool(
-        address token,
-        uint256 amount
-    ) payable public {
+    function setTokenFactory(address _tokenFactory) external onlyOwner {
+        require(_tokenFactory != address(0), "Non zero Address");
+        tokenFactory = _tokenFactory;
+    }
+
+    function createPool(address token, uint256 amount, address tokenOwnerAddress) public payable {
+        require(msg.sender == tokenFactory, "Only TokenFactory can call");
         require(amount > 0, "CreatePool: Larger than Zero");
         require(feeRecipient != address(0), "CreatePool: Non Zero Address");
         require(msg.value >= createFee, "CreatePool: Value Amount");
 
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        ERC20Burnable(token).transferFrom(msg.sender, address(this), amount);
 
         payable(feeRecipient).transfer(createFee);
 
-        bondingCurve[token] = Token ({
+        bondingCurve[token] = Token({
             tokenMint: token,
-            virtualTokenReserves: initialVirtualTokenReserves, 
+            virtualTokenReserves: initialVirtualTokenReserves,
             virtualEthReserves: initialVirtualEthReserves,
             realTokenReserves: amount,
             realEthReserves: 0,
             tokenTotalSupply: tokenTotalSupply,
             mcapLimit: mcapLimit,
-            complete: false
+            tokenOwner: tokenOwnerAddress,
+            complete: false,
+            uniswapV2Pair: address(0)
         });
 
-        emit CreatePool(token, msg.sender);
-
+        emit CreatePool(token, tokenOwnerAddress, initialVirtualTokenReserves, initialVirtualEthReserves);
     }
 
-    function buy(
-        address token,
-        uint256 amount,
-        uint256 maxEthCost
-    ) payable public {
+    function buy(address token, uint256 amount, uint256 maxEthCost) public payable nonReentrant {
         Token storage tokenCurve = bondingCurve[token];
         require(amount > 0, "Should Larger than zero");
         require(tokenCurve.complete == false, "Should Not Completed");
 
         uint256 featureAmount = tokenCurve.realTokenReserves - amount;
         uint256 featurePercentage = featureAmount * 100 / tokenCurve.tokenTotalSupply;
-        require(featurePercentage > 20, "Buy Amount Over");
+        require(featurePercentage >= 19, "Buy Amount Over");
 
         uint256 ethCost = calculateEthCost(tokenCurve, amount);
 
         require(ethCost <= maxEthCost, "Max Eth Cost");
 
         uint256 feeAmount = feeBasisPoint * ethCost / 10000;
-        uint256 ethAmount = ethCost- feeAmount;
+        uint256 ethAmount = ethCost - feeAmount;
 
         require(msg.value >= ethCost, "Exceed ETH Cost");
 
         payable(feeRecipient).transfer(feeAmount);
 
-        IERC20(token).transfer(msg.sender, amount);
+        ERC20Burnable(token).transfer(msg.sender, amount);
 
         tokenCurve.realTokenReserves -= amount;
         tokenCurve.virtualTokenReserves -= amount;
@@ -156,19 +172,22 @@ contract PumpFun is ReentrancyGuard {
 
         if (mcap > tokenCurve.mcapLimit || percentage < 20) {
             tokenCurve.complete = true;
-            
-            emit Complete(msg.sender, token, block.timestamp);
+            emit Complete(tokenCurve.tokenOwner, token, block.timestamp);
         }
 
-        emit Trade(token, ethCost, amount, true, msg.sender, block.timestamp, tokenCurve.virtualEthReserves, tokenCurve.virtualTokenReserves);
-
+        emit Trade(
+            token,
+            ethCost,
+            amount,
+            true,
+            msg.sender,
+            block.timestamp,
+            tokenCurve.virtualEthReserves,
+            tokenCurve.virtualTokenReserves
+        );
     }
 
-    function sell(
-        address token,
-        uint256 amount,
-        uint256 minEthOutput
-    ) public {
+    function sell(address token, uint256 amount, uint256 minEthOutput) public nonReentrant {
         Token storage tokenCurve = bondingCurve[token];
         require(tokenCurve.complete == false, "Should Not Completed");
         require(amount > 0, "Should Larger than zero");
@@ -185,34 +204,82 @@ contract PumpFun is ReentrancyGuard {
         payable(feeRecipient).transfer(feeAmount);
         payable(msg.sender).transfer(ethCost - feeAmount);
 
-        IERC20(token).transferFrom(msg.sender, address(this), amount);
+        ERC20Burnable(token).transferFrom(msg.sender, address(this), amount);
 
         tokenCurve.realTokenReserves += amount;
         tokenCurve.virtualTokenReserves += amount;
         tokenCurve.virtualEthReserves -= ethCost;
         tokenCurve.realEthReserves -= ethCost;
 
-        emit Trade(token, ethCost, amount, false, msg.sender, block.timestamp, tokenCurve.virtualEthReserves, tokenCurve.virtualTokenReserves);
-
+        emit Trade(
+            token,
+            ethCost,
+            amount,
+            false,
+            msg.sender,
+            block.timestamp,
+            tokenCurve.virtualEthReserves,
+            tokenCurve.virtualTokenReserves
+        );
     }
 
-    function withdraw(
-        address token
-    ) public onlyOwner {
+    function _approval(address _user, address _token, uint256 amount) private returns (bool) {
+        require(_user != address(0), "Zero addresses are not allowed.");
+        require(_token != address(0), "Zero addresses are not allowed.");
+
+        ERC20Burnable token_ = ERC20Burnable(_token);
+
+        token_.approve(_user, amount);
+
+        return true;
+    }
+
+    function openTradingOnUniswap(address token) public nonReentrant {
         Token storage tokenCurve = bondingCurve[token];
+        require(tokenCurve.complete == true, "Token not completed");
+        require(tokenCurve.uniswapV2Pair == address(0), "Pair already created");
 
-        require(tokenCurve.complete == true, "Should Be Completed");
+        bool approved = _approval(address(uniswapV2Router), address(token), tokenCurve.realTokenReserves);
+        require(approved);
 
-        payable(owner).transfer(tokenCurve.realEthReserves);
+        address uniswapV2Pair = IUniswapV2Factory(uniswapV2Router.factory()).createPair(token, uniswapV2Router.WETH());
 
-        IERC20(token).transfer(owner, tokenCurve.realTokenReserves);
+        uint256 burnAmount = tokenCurve.realTokenReserves * 19 / 100;
+
+        ERC20Burnable(token).burn(burnAmount);
+
+        tokenCurve.realTokenReserves -= burnAmount;
+        tokenCurve.virtualTokenReserves -= burnAmount;
+
+        uniswapV2Router.addLiquidityETH{value: tokenCurve.realEthReserves}(
+            token, tokenCurve.realTokenReserves, 0, 0, address(this), block.timestamp
+        );
+
+        ERC20Burnable lpToken = ERC20Burnable(uniswapV2Pair);
+        uint256 totalLP = lpToken.balanceOf(address(this));
+        lpToken.transfer(tokenCurve.tokenOwner, totalLP * 80 / 100); // 80% to creator
+        lpToken.transfer(feeRecipient, totalLP * 20 / 100); // 20% to protocol
+
+        ERC20Burnable(uniswapV2Pair).approve(address(uniswapV2Router), type(uint256).max);
+        emit OpenTradingOnUniswap(
+            token, uniswapV2Pair, tokenCurve.realEthReserves, tokenCurve.realTokenReserves, block.timestamp
+        );
+
+        tokenCurve.realEthReserves = 0;
+        tokenCurve.realTokenReserves = 0;
+        tokenCurve.virtualEthReserves = 0;
+        tokenCurve.virtualTokenReserves = 0;
+        tokenCurve.uniswapV2Pair = uniswapV2Pair;
+        tokenCurve.tokenOwner = address(0);
     }
 
     function calculateEthCost(Token memory token, uint256 tokenAmount) public pure returns (uint256) {
         uint256 virtualTokenReserves = token.virtualTokenReserves;
+        require(tokenAmount < virtualTokenReserves, "Token amount too large");
         uint256 pricePerToken = virtualTokenReserves - tokenAmount;
+        require(pricePerToken > 0, "Price would be zero");
         uint256 totalLiquidity = token.virtualEthReserves * token.virtualTokenReserves;
-        uint256 newEthReserves = totalLiquidity/pricePerToken;
+        uint256 newEthReserves = totalLiquidity / pricePerToken;
         uint256 ethCost = newEthReserves - token.virtualEthReserves;
 
         return ethCost;
@@ -223,7 +290,7 @@ contract PumpFun is ReentrancyGuard {
 
         feeRecipient = newAddr;
     }
-    
+
     function setOwner(address newAddr) external onlyOwner {
         require(newAddr != address(0), "Non zero Address");
 
@@ -256,12 +323,11 @@ contract PumpFun is ReentrancyGuard {
         createFee = newCreateFee;
     }
 
-    function getCreateFee() external view returns(uint256){
+    function getCreateFee() external view returns (uint256) {
         return createFee;
     }
 
     function getBondingCurve(address mint) external view returns (Token memory) {
         return bondingCurve[mint];
     }
-
 }
