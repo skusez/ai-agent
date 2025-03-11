@@ -1,0 +1,9 @@
+const args = [
+  "0xfdf70cF0781cDB28BCEF00167e15B09aF343A29b",
+  100000000000n,
+  100n,
+  "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
+  "0x539d38511439c407debe03e2cb0310b589039fba",
+];
+
+export default args;

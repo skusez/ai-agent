@@ -9,6 +9,7 @@
     "@wagmi/cli": "^2.2.0"
   },
   "dependencies": {
-    "@wagmi/core": "^2.16.5"
+    "@wagmi/core": "^2.16.5",
+    "wagmi": "^2.14.13"
   }
 }
