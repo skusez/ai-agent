@@ -6,22 +6,22 @@ import {
   useWriteAgentFactoryDeployErc20Token,
 } from "../../generated";
 /** @dev where ever your wagmi config is located */
-import { config } from "web3-lib";
+// import { config } from "web3-lib";
 import { Hex, parseEther } from "viem";
 
-async function getAgentCreateData() {
-  //optionally get this data server side
-  "use server";
-  const initialAmountPromise = readAgentFactoryInitialAmount(config, {});
-  const createFeePromise = readAgentManagerGetCreateFee(config, {});
+// async function getAgentCreateData() {
+//   //optionally get this data server side
+//   "use server";
+//   const initialAmountPromise = readAgentFactoryInitialAmount(config, {});
+//   const createFeePromise = readAgentManagerGetCreateFee(config, {});
 
-  const [initialAmount, createFee] = await Promise.all([
-    initialAmountPromise,
-    createFeePromise,
-  ]);
+//   const [initialAmount, createFee] = await Promise.all([
+//     initialAmountPromise,
+//     createFeePromise,
+//   ]);
 
-  return { initialAmount, createFee };
-}
+//   return { initialAmount, createFee };
+// }
 
 export const CreateAgentButton = ({
   onAgentCreated,
