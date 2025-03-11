@@ -1,0 +1,20 @@
+Balance of the account: 0.099999937560091
+deployed agent factory contract
+AgentFactory deployed to: 0x539d38511439c407debe03e2cb0310b589039fba
+agent manager deploy args [
+  '0xfdf70cF0781cDB28BCEF00167e15B09aF343A29b',
+  100000000000n,
+  100n,
+  '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
+  '0x539d38511439c407debe03e2cb0310b589039fba'
+]
+deployed agent manager contract
+AgentManager deployed to: 0xa8cba74726686462039c015161237e7abe3be516
+AgentFactory setPoolAddress
+Token deployed at: 0x28fa9055555ab67da9cd50fa09c2956f7cc3732e
+
+Next steps:
+1. Users can buy tokens using: pump.buy(tokenAddress, amount, maxEthCost, {value: ethAmount})
+2. Once the token is complete (mcap > mcapLimit or < 20% tokens left),
+   call: pump.openTradingOnUniswap(tokenAddress)
+Balance of the account after: 0.099980189480506492

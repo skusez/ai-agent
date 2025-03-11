@@ -1,7 +1,7 @@
 import hre from "hardhat";
-import { getAddress, Hex, parseEther } from "viem";
+import { formatEther, getAddress, Hex, parseEther } from "viem";
 
-import { baseSepolia, hardhat, mainnet, monadTestnet } from "viem/chains";
+import { baseSepolia, hardhat, monadTestnet, sepolia } from "viem/chains";
 import { abi as agentFactoryAbi } from "../artifacts/contracts/AgentFactory.sol/AgentFactory.json";
 import { waitForTransactionReceipt } from "viem/actions";
 
@@ -48,6 +48,20 @@ const deployConfig = {
     initComplete: false,
     router: "0x7a250d5630b4cF539739dF2C5dAcb4c659F2488D",
   },
+  [sepolia.id]: {
+    name: "AGENTNAME",
+    symbol: "AGENTSYMBOL",
+    decimals: 18,
+    feeRecipient: "0xfdf70cf0781cdb28bcef00167e15b09af343a29b",
+    feeAmount: parseEther("0.0000001"),
+    feeBasisPoint: 100n,
+    initialVirtualTokenReserves: parseEther("1000000"),
+    initialVirtualEthReserves: parseEther("3000000"),
+    tokenTotalSupply: parseEther("1000000000"),
+    mcapLimit: parseEther("1000000000"),
+    initComplete: false,
+    router: "0x7a250d5630b4cF539739dF2C5dAcb4c659F2488D",
+  },
 } as const;
 
 async function main() {
@@ -56,11 +70,13 @@ async function main() {
   const deployer = walletClient.account.address;
 
   const balance = await publicClient.getBalance({ address: deployer });
-  console.log("Balance of the account:", balance);
+  console.log("Balance of the account:", formatEther(balance));
 
   let hash: Hex = "0x";
 
   const agentFactoryContract = await hre.viem.deployContract("AgentFactory");
+
+  console.log("deployed agent factory contract");
 
   const agentFactoryAddress = agentFactoryContract.address;
   if (!agentFactoryAddress) throw new Error("AgentFactory deployment failed");
@@ -80,10 +96,14 @@ async function main() {
     agentFactoryAddress,
   ];
 
+  console.log("agent manager deploy args", args);
+
   const agentManagerContract = await hre.viem.deployContract(
     "AgentManager" as any,
     args
   );
+
+  console.log("deployed agent manager contract");
 
   const agentManagerAddress = agentManagerContract.address;
   if (!agentManagerAddress) throw new Error("AgentManager deployment failed");
@@ -124,6 +144,9 @@ async function main() {
     "2. Once the token is complete (mcap > mcapLimit or < 20% tokens left),"
   );
   console.log("   call: pump.openTradingOnUniswap(tokenAddress)");
+
+  const balanceAfter = await publicClient.getBalance({ address: deployer });
+  console.log("Balance of the account after:", formatEther(balanceAfter));
 }
 
 main().catch((error) => {

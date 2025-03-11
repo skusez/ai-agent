@@ -15,7 +15,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 10_000,
       },
     },
     compilers: [
@@ -40,6 +40,11 @@ const config: HardhatUserConfig = {
     "monad-testnet": {
       chainId: 10143,
       url: `https://monad-testnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
+      accounts: [process.env.PRIVATE_KEY as string],
+    },
+    sepolia: {
+      chainId: 11155111,
+      url: "https://sepolia.drpc.org",
       accounts: [process.env.PRIVATE_KEY as string],
     },
   },
