@@ -1,24 +1,30 @@
-import { createConfig } from "ponder";
+import { createConfig, NetworkConfig } from "ponder";
 import { http } from "viem";
 
-import { pumpFunAbi, pumpFunAddress } from "../generated";
-import { monadTestnet } from "viem/chains";
-
+import { agentManagerAbi, agentManagerAddress } from "../generated";
+import { monadTestnet, sepolia } from "viem/chains";
 const networks = {
+  [sepolia.id]: {
+    chainId: sepolia.id,
+    transport: http(process.env[`PONDER_RPC_URL_${sepolia.id}`]),
+  },
   [monadTestnet.id]: {
     chainId: monadTestnet.id,
-    transport: http(process.env.PONDER_RPC_URL_10143),
+    transport: http(process.env[`PONDER_RPC_URL_${monadTestnet.id}`]),
   },
-} as const;
+} as const satisfies Record<number, NetworkConfig>;
 
 export default createConfig({
   networks,
   contracts: {
-    pumpFun: {
-      abi: pumpFunAbi,
-      network: monadTestnet.id,
-      address: pumpFunAddress[monadTestnet.id],
-      startBlock: "latest",
+    agentManager: {
+      abi: agentManagerAbi,
+      network: {
+        [sepolia.id]: {
+          address: agentManagerAddress[sepolia.id],
+          startBlock: 7878113,
+        },
+      },
     },
   },
 });

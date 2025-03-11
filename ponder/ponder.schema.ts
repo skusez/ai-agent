@@ -11,12 +11,16 @@ export const eventCreatePool = onchainTable(
   (t) => ({
     userAddress: t.hex().notNull(),
     agentAddress: t.hex().notNull(),
+    virtualEthReserves: t.bigint().notNull(),
+    virtualTokenReserves: t.bigint().notNull(),
     timestamp: t.bigint().notNull(),
     txHash: t.hex().notNull(),
     chainId: t.integer().notNull().$type<SupportedChainIds>(),
   }),
   (t) => ({
     pk: primaryKey({ columns: [t.userAddress, t.agentAddress] }),
+    idxAgentAddress: index().on(t.agentAddress),
+    idxUserAddress: index().on(t.userAddress),
   })
 );
 
@@ -32,6 +36,8 @@ export const eventComplete = onchainTable(
   }),
   (t) => ({
     pk: primaryKey({ columns: [t.userAddress, t.agentAddress] }),
+    idxAgentAddress: index().on(t.agentAddress),
+    idxUserAddress: index().on(t.userAddress),
   })
 );
 
@@ -54,5 +60,23 @@ export const eventTrade = onchainTable(
     pk: primaryKey({ columns: [t.txHash] }),
     idxAgentAddress: index().on(t.agentAddress),
     idxUserAddress: index().on(t.userAddress),
+  })
+);
+
+// event OpenTradingOnUniswap(address indexed token, address indexed uniswapV2Pair, uint256 ethReserves, uint256 tokenReserves, uint256 timestamp);
+export const eventOpenTradingOnUniswap = onchainTable(
+  "event_open_trading_on_uniswap",
+  (t) => ({
+    agentAddress: t.hex().notNull(),
+    uniswapV2Pair: t.hex().notNull(),
+    ethReserves: t.bigint().notNull(),
+    tokenReserves: t.bigint().notNull(),
+    timestamp: t.bigint().notNull(),
+    txHash: t.hex().notNull(),
+    chainId: t.integer().notNull().$type<SupportedChainIds>(),
+  }),
+  (t) => ({
+    pk: primaryKey({ columns: [t.txHash] }),
+    idxAgentAddress: index().on(t.agentAddress),
   })
 );
