@@ -1,5 +1,5 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-viem";
 import "dotenv/config";
 import "hardhat-storage-layout";
 
@@ -38,10 +38,17 @@ const config: HardhatUserConfig = {
       },
     },
     "monad-testnet": {
+      chainId: 10143,
       url: `https://monad-testnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
       accounts: [process.env.PRIVATE_KEY as string],
     },
   },
+
+  // sourcify: {
+  //   enabled: true,
+  //   apiUrl: "https://sourcify-api-monad.blockvision.org",
+  //   browserUrl: "https://testnet.monadexplorer.com",
+  // },
 };
 
 export default config;

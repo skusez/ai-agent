@@ -1,41 +1,119 @@
 import hre from "hardhat";
-import PumpModule from "../ignition/modules/Pump";
+import { getAddress, Hex, parseEther } from "viem";
+
+import { baseSepolia, hardhat, mainnet, monadTestnet } from "viem/chains";
+import { abi as agentFactoryAbi } from "../artifacts/contracts/AgentFactory.sol/AgentFactory.json";
+import { waitForTransactionReceipt } from "viem/actions";
+
+const deployConfig = {
+  [hardhat.id]: {
+    name: "Test Token",
+    symbol: "TST",
+    decimals: 18,
+    feeRecipient: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    feeAmount: parseEther("0.1"),
+    feeBasisPoint: 100n,
+    initialVirtualTokenReserves: parseEther("1000000"),
+    initialVirtualEthReserves: parseEther("3000000"),
+    tokenTotalSupply: parseEther("1000000000"),
+    mcapLimit: parseEther("1000000000"),
+    initComplete: false,
+    router: "0x7a250d5630b4cF539739dF2C5dAcb4c659F2488D",
+  },
+  [baseSepolia.id]: {
+    name: "PumpNotFun",
+    symbol: "PNF",
+    decimals: 18,
+    feeRecipient: "0xfdf70cf0781cdb28bcef00167e15b09af343a29b",
+    feeAmount: parseEther("0.0000001"),
+    feeBasisPoint: 100n,
+    initialVirtualTokenReserves: parseEther("1000000"),
+    initialVirtualEthReserves: parseEther("3000000"),
+    tokenTotalSupply: parseEther("1000000000"),
+    mcapLimit: parseEther("1000000000"),
+    initComplete: false,
+    router: "0x7a250d5630b4cF539739dF2C5dAcb4c659F2488D",
+  },
+  [monadTestnet.id]: {
+    name: "PumpNotFun",
+    symbol: "PNF",
+    decimals: 18,
+    feeRecipient: "0xfdf70cf0781cdb28bcef00167e15b09af343a29b",
+    feeAmount: parseEther("0.0000001"),
+    feeBasisPoint: 100n,
+    initialVirtualTokenReserves: parseEther("1000000"),
+    initialVirtualEthReserves: parseEther("3000000"),
+    tokenTotalSupply: parseEther("1000000000"),
+    mcapLimit: parseEther("1000000000"),
+    initComplete: false,
+    router: "0x7a250d5630b4cF539739dF2C5dAcb4c659F2488D",
+  },
+} as const;
 
 async function main() {
-  // get the deployer account
-  const [deployer] = await hre.ethers.getSigners();
-  console.log("Deployer:", deployer.address);
+  const publicClient = await hre.viem.getPublicClient();
+  const [walletClient] = await hre.viem.getWalletClients();
+  const deployer = walletClient.account.address;
 
-  // log the balance of the account
-  const balance = await hre.ethers.provider.getBalance(deployer.address);
+  const balance = await publicClient.getBalance({ address: deployer });
   console.log("Balance of the account:", balance);
 
-  const { pump, tokenFactory } = await hre.ignition.deploy(PumpModule);
-  const pumpAddress = await pump.getAddress();
-  console.log("Pump deployed to:", pumpAddress);
+  let hash: Hex = "0x";
 
-  const tokenFactoryAddress = await tokenFactory.getAddress();
-  console.log("TokenFactory deployed to:", tokenFactoryAddress);
+  const agentFactoryContract = await hre.viem.deployContract("AgentFactory");
 
-  // Set the PumpFun address in TokenFactory
-  await tokenFactory.setPoolAddress(pumpAddress);
-  console.log("TokenFactory setPoolAddress to:", pumpAddress);
+  const agentFactoryAddress = agentFactoryContract.address;
+  if (!agentFactoryAddress) throw new Error("AgentFactory deployment failed");
+  console.log("AgentFactory deployed to:", agentFactoryAddress);
+
+  const config =
+    deployConfig[publicClient.chain.id as keyof typeof deployConfig];
+
+  if (!config)
+    throw new Error(`Config for chain ${publicClient.chain.id} not found`);
+
+  const args = [
+    getAddress(config.feeRecipient),
+    config.feeAmount,
+    config.feeBasisPoint,
+    getAddress(config.router),
+    agentFactoryAddress,
+  ];
+
+  const agentManagerContract = await hre.viem.deployContract(
+    "AgentManager" as any,
+    args
+  );
+
+  const agentManagerAddress = agentManagerContract.address;
+  if (!agentManagerAddress) throw new Error("AgentManager deployment failed");
+  console.log("AgentManager deployed to:", agentManagerAddress);
+
+  // Set the agentManager address in TokenFactor
+
+  hash = await walletClient.writeContract({
+    abi: agentFactoryAbi,
+    address: agentFactoryAddress,
+    functionName: "setPoolAddress",
+    args: [agentManagerAddress],
+  });
+
+  await waitForTransactionReceipt(walletClient, { hash });
+
+  console.log("AgentFactory setPoolAddress");
 
   // Create a new token
-  const createTokenTx = await tokenFactory.deployERC20Token(
-    "Test Token",
-    "TST",
-    {
-      value: 1000000000000000n,
-    }
-  );
-  await createTokenTx.wait();
-  console.log("New token deployed");
+  hash = await walletClient.writeContract({
+    abi: agentFactoryAbi,
+    address: agentFactoryAddress,
+    functionName: "deployERC20Token",
+    args: [config.name, config.symbol],
+    value: config.feeAmount,
+  });
 
-  // Get the token address
-  const tokenCount = await tokenFactory.currentTokenIndex();
-  const tokenData = await tokenFactory.tokens(tokenCount - 1);
-  const tokenAddress = tokenData[0]; // The token address is the first element in the returned struct
+  const tokenReceipt = await waitForTransactionReceipt(walletClient, { hash });
+  const tokenAddress = tokenReceipt.logs[0].address;
+
   console.log("Token deployed at:", tokenAddress);
 
   console.log("\nNext steps:");

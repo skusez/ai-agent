@@ -1,6 +1,6 @@
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
 import { parseEther } from "ethers";
-const config = {
+const deployConfig = {
   localhost: {
     name: "Test Token",
     symbol: "TST",
@@ -13,6 +13,7 @@ const config = {
     tokenTotalSupply: parseEther("1000000000"),
     mcapLimit: parseEther("1000000000"),
     initComplete: false,
+    router: "0x7a250d5630b4cF539739dF2C5dAcb4c659F2488D",
   },
   "base-sepolia": {
     name: "PumpNotFun",
@@ -26,6 +27,7 @@ const config = {
     tokenTotalSupply: parseEther("1000000000"),
     mcapLimit: parseEther("1000000000"),
     initComplete: false,
+    router: "0x7a250d5630b4cF539739dF2C5dAcb4c659F2488D",
   },
   "monad-testnet": {
     name: "PumpNotFun",
@@ -39,31 +41,34 @@ const config = {
     tokenTotalSupply: parseEther("1000000000"),
     mcapLimit: parseEther("1000000000"),
     initComplete: false,
+    router: "0x7a250d5630b4cF539739dF2C5dAcb4c659F2488D",
   },
 } as const;
+
 function getConfig(network: string | undefined) {
   if (!network) {
     throw new Error("Network is required");
   }
-  if (!(network in config)) {
+  if (!(network in deployConfig)) {
     throw new Error(`Network ${network} not found`);
   }
-  return config[network as keyof typeof config];
+  return deployConfig[network as keyof typeof deployConfig];
 }
-const PumpModule = buildModule("PumpFun", (m) => {
-  const config = getConfig(process.env.HARDHAT_NETWORK);
-  console.log("Config:", process.env.HARDHAT_NETWORK, config);
 
-  // Deploy main contract first
-  const pump = m.contract("PumpFun", [
-    config.feeRecipient,
-    config.feeAmount,
-    config.feeBasisPoint,
-  ]);
+const PumpModule = (tokenFactory: string) =>
+  buildModule("PumpFun", (m) => {
+    const config = getConfig(process.env.HARDHAT_NETWORK);
+    console.log("Config:", process.env.HARDHAT_NETWORK, config);
 
-  const tokenFactory = m.contract("TokenFactory");
+    const pump = m.contract("PumpFun", [
+      config.feeRecipient,
+      config.feeAmount,
+      config.feeBasisPoint,
+      config.router,
+      tokenFactory,
+    ]);
 
-  return { pump, tokenFactory };
-});
+    return { pump };
+  });
 
 export default PumpModule;

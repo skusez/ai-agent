@@ -2,48 +2,48 @@
 
 pragma solidity ^0.8.24;
 
-import "./Token.sol";
+import "./Agent.sol";
 
-interface IPumpFun {
+interface IAgentManager {
     function createPool(address token, uint256 amount, address tokenOwner) external payable;
     function getCreateFee() external view returns (uint256);
 }
 
-contract TokenFactory {
-    uint256 public currentTokenIndex = 0;
+contract AgentFactory {
+    uint256 public currentAgentIndex = 0;
     uint256 public immutable INITIAL_AMOUNT = 10 ** 27;
 
     address public contractAddress;
     address public owner;
 
-    struct TokenStructure {
-        address tokenAddress;
-        string tokenName;
-        string tokenSymbol;
+    struct AgentStructure {
+        address agentAddress;
+        string agentName;
+        string agentSymbol;
         uint256 totalSupply;
     }
 
-    TokenStructure[] public tokens;
+    AgentStructure[] public agents;
 
     constructor() {
         owner = msg.sender;
     }
 
     function deployERC20Token(string memory name, string memory ticker) public payable returns (address) {
-        Token token = new Token(name, ticker, INITIAL_AMOUNT);
-        tokens.push(TokenStructure(address(token), name, ticker, INITIAL_AMOUNT));
+        Agent agent = new Agent(name, ticker, INITIAL_AMOUNT);
+        agents.push(AgentStructure(address(agent), name, ticker, INITIAL_AMOUNT));
 
-        token.approve(contractAddress, INITIAL_AMOUNT);
-        uint256 fee = IPumpFun(contractAddress).getCreateFee();
+        agent.approve(contractAddress, INITIAL_AMOUNT);
+        uint256 fee = IAgentManager(contractAddress).getCreateFee();
 
         require(msg.value >= fee, "Input Balance Should Be larger");
 
-        IPumpFun(contractAddress).createPool{value: fee}(address(token), INITIAL_AMOUNT, msg.sender);
+        IAgentManager(contractAddress).createPool{value: fee}(address(agent), INITIAL_AMOUNT, msg.sender);
         if (msg.value > fee) {
             payable(msg.sender).transfer(msg.value - fee);
         }
 
-        return address(token);
+        return address(agent);
     }
 
     modifier onlyOwner() {
