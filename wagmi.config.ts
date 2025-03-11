@@ -7,14 +7,14 @@ export default defineConfig({
   plugins: [
     hardhat({
       project: "./hardhat",
-      // deployments: {
-      //   AgentManager: {
-      //     10143: "0xea31e60F06a30AA3fc5cA4203BC0DCd7C3f5f06c",
-      //   },
-      //   AgentFactory: {
-      //     10143: "0x0310D271B1CcCdbe4557B73a6Dcb3718cDAD8CFA",
-      //   },
-      // },
+      deployments: {
+        AgentManager: {
+          10143: "0xa8cba74726686462039c015161237e7abe3be516",
+        },
+        AgentFactory: {
+          10143: "0x539d38511439c407debe03e2cb0310b589039fba",
+        },
+      },
     }),
     actions(),
     react(),
