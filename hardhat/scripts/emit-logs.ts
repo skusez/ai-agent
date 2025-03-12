@@ -1,13 +1,14 @@
+// TODO fix
 import hre from "hardhat";
 import { parseEther, formatEther } from "ethers";
 import { getAddress } from "viem";
 // erc20 address = 0x85563691aADB8F9977861F075f2e579131649822
-// pump address = 0xfbc2ed7c5c9aEf863E42fe1F862427A0b410C7D3
+// agent address = 0xfbc2ed7c5c9aEf863E42fe1F862427A0b410C7D3
 // token factory address = 0x9C6F2F3c726D5aBcc34D8227941A7602b4e9FC2B
 async function main() {
   // Get deployed contracts
-  const pump = await hre.viem.getContractAt(
-    "PumpFun",
+  const agentFactory = await hre.viem.getContractAt(
+    "AgentFactory",
     "0xfbc2ed7c5c9aEf863E42fe1F862427A0b410C7D3"
   );
   const tokenFactory = await hre.viem.getContractAt(
@@ -15,10 +16,10 @@ async function main() {
     "0x9C6F2F3c726D5aBcc34D8227941A7602b4e9FC2B"
   );
 
-  const createFee = await pump.read.getCreateFee();
+  const createFee = await agentFactory.read.getCreateFee();
   console.log("Create fee:", formatEther(createFee));
 
-  const bondingCurve = await pump.read.getBondingCurve({
+  const bondingCurve = await agent.read.getBondingCurve({
     getAddress("0x85563691aadb8f9977861f075f2e579131649822")
 });
   console.log("Bonding curve:", bondingCurve);
@@ -32,8 +33,8 @@ async function main() {
     mcapLimit,
     complete,
   } = bondingCurve;
-  //   Make a trade using the pump contract
-  const ethCost = await pump.calculateEthCost(
+  //   Make a trade using the agent contract
+  const ethCost = await agent.calculateEthCost(
     {
       virtualTokenReserves,
       virtualEthReserves,
@@ -49,7 +50,7 @@ async function main() {
 
   console.log("Eth cost:", formatEther(ethCost));
 
-  const tradeTx = await pump.buy(
+  const tradeTx = await agent.buy(
     "0x85563691aADB8F9977861F075f2e579131649822",
     ethCost,
     parseEther("0.00001"),

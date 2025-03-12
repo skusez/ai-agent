@@ -1,6 +1,6 @@
 import { expect } from "chai";
 // Hardhat's environment provides these functions from Mocha
-import { ethers, storageLayout } from "hardhat";
+import { ethers } from "hardhat";
 import { describe, it } from "node:test";
 import { UniswapV2Deployer } from "../deployers/UniswapV2Deployer";
 describe("Test Pump Fun", function () {

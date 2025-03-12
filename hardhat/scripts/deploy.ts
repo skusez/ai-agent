@@ -138,12 +138,12 @@ async function main() {
 
   console.log("\nNext steps:");
   console.log(
-    "1. Users can buy tokens using: pump.buy(tokenAddress, amount, maxEthCost, {value: ethAmount})"
+    "1. Users can buy tokens using: agent.buy(tokenAddress, amount, maxEthCost, {value: ethAmount})"
   );
   console.log(
     "2. Once the token is complete (mcap > mcapLimit or < 20% tokens left),"
   );
-  console.log("   call: pump.openTradingOnUniswap(tokenAddress)");
+  console.log("   call: agent.openTradingOnUniswap(tokenAddress)");
 
   const balanceAfter = await publicClient.getBalance({ address: deployer });
   console.log("Balance of the account after:", formatEther(balanceAfter));
