@@ -14,7 +14,7 @@ AgentFactory setPoolAddress
 Token deployed at: 0x28fa9055555ab67da9cd50fa09c2956f7cc3732e
 
 Next steps:
-1. Users can buy tokens using: pump.buy(tokenAddress, amount, maxEthCost, {value: ethAmount})
+1. Users can buy tokens using: agent.buy(tokenAddress, amount, maxEthCost, {value: ethAmount})
 2. Once the token is complete (mcap > mcapLimit or < 20% tokens left),
-   call: pump.openTradingOnUniswap(tokenAddress)
+   call: agent.openTradingOnUniswap(tokenAddress)
 Balance of the account after: 0.099980189480506492
